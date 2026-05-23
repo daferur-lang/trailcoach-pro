@@ -256,7 +256,10 @@ function renderAll() {
 }
 
 function onNavigate(view) {
-  if (view === 'coach') ui.enableSendBtn(true);
+  if (view === 'coach') {
+    const input = document.getElementById('chatInput');
+    ui.enableSendBtn((input?.value?.trim().length || 0) > 0);
+  }
 }
 
 // ── Sync Activities ────────────────────────────────────────
