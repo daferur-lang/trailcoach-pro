@@ -750,7 +750,7 @@ img, svg { display: block; }
 
 .card-name {
   position: absolute;
-  bottom: 54px;
+  bottom: 80px;
   left: 0;
   right: 0;
   text-align: center;
@@ -767,12 +767,12 @@ img, svg { display: block; }
 
 .card-stats {
   position: absolute;
-  bottom: 14px;
+  bottom: 50px;
   left: 0;
   right: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: 0 8px;
+  padding: 0 12px;
   z-index: 3;
 }
 
