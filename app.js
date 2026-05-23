@@ -6,7 +6,8 @@ import { ProfileManager } from './js/profile.js';
 import { CoachAI }       from './js/coach.js';
 import { UI }            from './js/ui.js';
 
-const CONFIG_KEY = 'tc_config';
+const CONFIG_KEY  = 'tc_config';
+const ACCESS_KEY  = 'tc_access_code';
 
 const DEFAULT_CONFIG = {
   // Strava — el client_secret vive en el Worker, no aquí
@@ -41,7 +42,50 @@ const coach   = new CoachAI();
 const ui      = new UI();
 
 // ── Boot ──────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
+  if (checkAccess()) {
+    initApp();
+  } else {
+    showGate();
+  }
+});
+
+function checkAccess() {
+  const codes = APP_CONFIG.accessCodes;
+  if (!codes || codes.length === 0) return true;
+  const stored = localStorage.getItem(ACCESS_KEY);
+  return Boolean(stored && codes.includes(stored));
+}
+
+function showGate() {
+  document.getElementById('accessGate')?.classList.add('open');
+
+  const input  = document.getElementById('gateCodeInput');
+  const btn    = document.getElementById('gateSubmitBtn');
+  const errEl  = document.getElementById('gateError');
+
+  function tryCode() {
+    const code = (input?.value || '').trim().toUpperCase();
+    if (!code) return;
+    if (APP_CONFIG.accessCodes.includes(code)) {
+      localStorage.setItem(ACCESS_KEY, code);
+      document.getElementById('accessGate')?.classList.remove('open');
+      initApp();
+    } else {
+      if (errEl) errEl.style.display = 'block';
+      input?.classList.add('gate-shake');
+      setTimeout(() => input?.classList.remove('gate-shake'), 500);
+    }
+  }
+
+  btn?.addEventListener('click', tryCode);
+  input?.addEventListener('keydown', e => { if (e.key === 'Enter') tryCode(); });
+  input?.addEventListener('input', () => {
+    if (errEl) errEl.style.display = 'none';
+  });
+}
+
+async function initApp() {
   ui.applyTheme(state.config.darkMode);
 
   if ('serviceWorker' in navigator) {
@@ -63,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await handleOAuthCallback();
   renderAll();
-});
+}
 
 // ── OAuth Callback ─────────────────────────────────────────
 async function handleOAuthCallback() {

@@ -396,6 +396,36 @@
   <p class="loading-text" id="loadingText">Sincronizando...</p>
 </div>
 
+<!-- ACCESS GATE -->
+<div class="access-gate" id="accessGate">
+  <div class="gate-inner">
+    <div class="gate-logo">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+        <path d="M3 19 L8 11 L12 15 L16 8 L21 19 Z" fill="white" stroke="white" stroke-width=".5" stroke-linejoin="round"/>
+        <circle cx="18" cy="5" r="2" fill="rgba(255,255,255,.7)"/>
+      </svg>
+    </div>
+    <h1 class="gate-title">TrailCoach Pro</h1>
+    <p class="gate-subtitle">Introduce tu código de acceso para continuar</p>
+    <div class="gate-form">
+      <input
+        type="text"
+        class="gate-input"
+        id="gateCodeInput"
+        placeholder="TCP-NOMBRE-2026"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="characters"
+        spellcheck="false"
+        maxlength="30"
+      >
+      <p class="gate-error" id="gateError" style="display:none;">Código incorrecto. Pide tu acceso al administrador.</p>
+      <button class="btn-primary full-width gate-btn" id="gateSubmitBtn">Acceder</button>
+    </div>
+    <p class="gate-footer">¿Sin código? Escribe a <strong>daferur@gmail.com</strong></p>
+  </div>
+</div>
+
 <script type="module" src="app.js"></script>
 </body>
 </html>

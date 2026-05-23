@@ -20,4 +20,11 @@ export const APP_CONFIG = {
   goalElevation: 2000,
   goalDate:      '2026-10-18',
   goalName:      '',
+
+  // Códigos de acceso — añade uno por persona, elimínalo para revocar.
+  // Formato sugerido: TCP-NOMBRE-AÑO  (mayúsculas, sin espacios)
+  // Deja el array vacío [] para desactivar el control de acceso.
+  accessCodes: [
+    'TCP-DIEGO-2026',   // Admin — Diego Codarini
+  ],
 };
