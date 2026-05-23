@@ -1400,6 +1400,114 @@ img, svg { display: block; }
 /* Prevent double-tap zoom on buttons */
 button { touch-action: manipulation; }
 
+/* --- ONBOARDING -------------------------------------------- */
+.onboarding {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 290;
+  background: linear-gradient(160deg, #1C1A17 0%, #2A2118 55%, #1C1A17 100%);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+.onboarding.open { display: flex; }
+
+.onboarding-inner {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0 32px;
+  animation: gate-enter .35s cubic-bezier(.4,0,.2,1);
+}
+
+.ob-progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.ob-step {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.12);
+  transition: background .3s;
+}
+.ob-step.active { background: var(--c-primary); }
+.ob-step.done   { background: var(--c-accent); }
+
+.ob-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #F5F0E8;
+  letter-spacing: -0.3px;
+  margin-bottom: 4px;
+}
+
+.ob-subtitle {
+  font-size: 14px;
+  color: #A89F96;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.ob-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.ob-field { display: flex; flex-direction: column; gap: 6px; }
+
+.ob-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6B6560;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.ob-optional { font-weight: 500; text-transform: none; letter-spacing: 0; }
+
+.ob-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.ob-col { display: flex; flex-direction: column; gap: 6px; }
+
+.ob-next-btn { margin-top: 0; }
+
+.ob-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ob-chip, .ob-chip-level {
+  padding: 9px 16px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #A89F96;
+  background: rgba(255,255,255,.06);
+  border: 1.5px solid rgba(255,255,255,.1);
+  transition: all .15s;
+  font-family: var(--font);
+}
+.ob-chip.selected, .ob-chip-level.selected {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: #fff;
+}
+.ob-chip:active, .ob-chip-level:active { opacity: .8; }
+
 /* --- ACCESS GATE ------------------------------------------- */
 .access-gate {
   display: none;

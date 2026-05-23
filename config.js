@@ -14,13 +14,6 @@ export const APP_CONFIG = {
 
   workerUrl: 'https://trailcoach-strava.daferur.workers.dev',
 
-  // Valores por defecto del atleta (se pueden cambiar en Ajustes)
-  athleteName:  'Diego Codarini',
-  goalDistance:  65,
-  goalElevation: 2000,
-  goalDate:      '2026-10-18',
-  goalName:      '',
-
   // Códigos de acceso — añade uno por persona, elimínalo para revocar.
   // Formato sugerido: TCP-NOMBRE-AÑO  (mayúsculas, sin espacios)
   // Deja el array vacío [] para desactivar el control de acceso.

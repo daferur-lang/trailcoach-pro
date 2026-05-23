@@ -396,6 +396,85 @@
   <p class="loading-text" id="loadingText">Sincronizando...</p>
 </div>
 
+<!-- ONBOARDING -->
+<div class="onboarding" id="onboarding">
+  <div class="onboarding-inner">
+
+    <div class="ob-progress">
+      <div class="ob-step active" data-step="1"></div>
+      <div class="ob-step" data-step="2"></div>
+      <div class="ob-step" data-step="3"></div>
+    </div>
+
+    <!-- Paso 1 — Nombre -->
+    <div id="obStep1">
+      <div class="gate-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path d="M3 19 L8 11 L12 15 L16 8 L21 19 Z" fill="white" stroke="white" stroke-width=".5" stroke-linejoin="round"/>
+          <circle cx="18" cy="5" r="2" fill="rgba(255,255,255,.7)"/>
+        </svg>
+      </div>
+      <h2 class="ob-title">Bienvenido a TrailCoach Pro</h2>
+      <p class="ob-subtitle">Vamos a personalizar tu plan de entrenamiento.<br>Solo 3 pasos rápidos.</p>
+      <div class="ob-form">
+        <label class="ob-label">¿Cómo te llamas?</label>
+        <input type="text" class="gate-input" id="obName" placeholder="Tu nombre" autocapitalize="words" autocomplete="given-name">
+      </div>
+      <button class="btn-primary full-width ob-next-btn" id="obNext1">Siguiente</button>
+    </div>
+
+    <!-- Paso 2 — Objetivo -->
+    <div id="obStep2" style="display:none;">
+      <h2 class="ob-title">Tu objetivo</h2>
+      <p class="ob-subtitle">¿A qué carrera te estás preparando?</p>
+      <div class="ob-form">
+        <div class="ob-field">
+          <label class="ob-label">Nombre de la carrera <span class="ob-optional">(opcional)</span></label>
+          <input type="text" class="gate-input" id="obGoalName" placeholder="Ej: Ultra Sierra 65K">
+        </div>
+        <div class="ob-row">
+          <div class="ob-col">
+            <label class="ob-label">Distancia (km)</label>
+            <input type="number" class="gate-input" id="obDistance" placeholder="65" min="1" max="350" inputmode="decimal">
+          </div>
+          <div class="ob-col">
+            <label class="ob-label">Desnivel (m D+)</label>
+            <input type="number" class="gate-input" id="obElevation" placeholder="2000" min="0" inputmode="decimal">
+          </div>
+        </div>
+        <div class="ob-field">
+          <label class="ob-label">Fecha del objetivo</label>
+          <input type="date" class="gate-input" id="obDate">
+        </div>
+      </div>
+      <button class="btn-primary full-width ob-next-btn" id="obNext2">Siguiente</button>
+    </div>
+
+    <!-- Paso 3 — Nivel -->
+    <div id="obStep3" style="display:none;">
+      <h2 class="ob-title">Tu disponibilidad</h2>
+      <p class="ob-subtitle">Para ajustar la carga semanal del plan</p>
+      <div class="ob-form">
+        <label class="ob-label">Días por semana para entrenar</label>
+        <div class="ob-chips">
+          <button class="ob-chip" data-val="2">2 días</button>
+          <button class="ob-chip" data-val="3">3 días</button>
+          <button class="ob-chip selected" data-val="4">4 días</button>
+          <button class="ob-chip" data-val="5">5+ días</button>
+        </div>
+        <label class="ob-label" style="margin-top:20px;">Nivel en trail running</label>
+        <div class="ob-chips">
+          <button class="ob-chip-level" data-val="beginner">Principiante</button>
+          <button class="ob-chip-level selected" data-val="intermediate">Intermedio</button>
+          <button class="ob-chip-level" data-val="advanced">Avanzado</button>
+        </div>
+      </div>
+      <button class="btn-primary full-width ob-next-btn" id="obFinish">Empezar mi plan</button>
+    </div>
+
+  </div>
+</div>
+
 <!-- ACCESS GATE -->
 <div class="access-gate" id="accessGate">
   <div class="gate-inner">

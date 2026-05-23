@@ -10,21 +10,17 @@ const CONFIG_KEY  = 'tc_config';
 const ACCESS_KEY  = 'tc_access_code';
 
 const DEFAULT_CONFIG = {
-  // Strava — el client_secret vive en el Worker, no aquí
   stravaClientId: APP_CONFIG.stravaClientId || '',
   workerUrl:      APP_CONFIG.workerUrl      || '',
-
-  // IA coach (Groq — gratuito)
-  groqApiKey: '',
-
-  // Atleta y objetivo
-  athleteName:   APP_CONFIG.athleteName   || 'Diego Codarini',
-  goalName:      APP_CONFIG.goalName      || '',
-  goalDistance:  APP_CONFIG.goalDistance  || 65,
-  goalElevation: APP_CONFIG.goalElevation || 2000,
-  goalDate:      APP_CONFIG.goalDate      || '2026-10-18',
-
-  darkMode: false
+  groqApiKey:     '',
+  athleteName:    '',
+  goalName:       '',
+  goalDistance:   null,
+  goalElevation:  null,
+  goalDate:       '',
+  trainingDays:   3,
+  level:          'intermediate',
+  darkMode:       false
 };
 
 // ── State ──────────────────────────────────────────────────
@@ -106,7 +102,102 @@ async function initApp() {
   bindEvents();
 
   await handleOAuthCallback();
-  renderAll();
+
+  if (hasOnboardingData()) {
+    renderAll();
+  } else {
+    showOnboarding();
+  }
+}
+
+function hasOnboardingData() {
+  return !!(state.config.athleteName && state.config.goalDate);
+}
+
+function showOnboarding() {
+  document.getElementById('onboarding')?.classList.add('open');
+
+  let selectedDays  = state.config.trainingDays  || 3;
+  let selectedLevel = state.config.level          || 'intermediate';
+
+  function goToStep(n) {
+    [1, 2, 3].forEach(i => {
+      const panel = document.getElementById(`obStep${i}`);
+      if (panel) panel.style.display = i === n ? '' : 'none';
+    });
+    document.querySelectorAll('.ob-step').forEach(s => {
+      const sn = parseInt(s.dataset.step);
+      s.classList.toggle('active', sn === n);
+      s.classList.toggle('done',   sn < n);
+    });
+  }
+
+  function shakeInput(id) {
+    const el = document.getElementById(id);
+    el?.classList.add('gate-shake');
+    setTimeout(() => el?.classList.remove('gate-shake'), 500);
+  }
+
+  // Day chips
+  document.querySelectorAll('.ob-chip[data-val]').forEach(chip => {
+    if (parseInt(chip.dataset.val) === selectedDays) chip.classList.add('selected');
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.ob-chip[data-val]').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedDays = parseInt(chip.dataset.val);
+    });
+  });
+
+  // Level chips
+  document.querySelectorAll('.ob-chip-level').forEach(chip => {
+    if (chip.dataset.val === selectedLevel) chip.classList.add('selected');
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.ob-chip-level').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedLevel = chip.dataset.val;
+    });
+  });
+
+  document.getElementById('obNext1')?.addEventListener('click', () => {
+    const name = document.getElementById('obName')?.value?.trim();
+    if (!name) { shakeInput('obName'); return; }
+    goToStep(2);
+  });
+  document.getElementById('obName')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('obNext1')?.click();
+  });
+
+  document.getElementById('obNext2')?.addEventListener('click', () => {
+    const dist = document.getElementById('obDistance')?.value;
+    const date = document.getElementById('obDate')?.value;
+    if (!dist) { shakeInput('obDistance'); return; }
+    if (!date) { shakeInput('obDate');     return; }
+    goToStep(3);
+  });
+
+  document.getElementById('obFinish')?.addEventListener('click', () => {
+    const name = document.getElementById('obName')?.value?.trim()     || '';
+    const goal = document.getElementById('obGoalName')?.value?.trim() || '';
+    const dist = parseFloat(document.getElementById('obDistance')?.value) || null;
+    const elev = parseFloat(document.getElementById('obElevation')?.value) || 0;
+    const date = document.getElementById('obDate')?.value || '';
+
+    state.config = {
+      ...state.config,
+      athleteName:   name,
+      goalName:      goal,
+      goalDistance:  dist,
+      goalElevation: elev,
+      goalDate:      date,
+      trainingDays:  selectedDays,
+      level:         selectedLevel
+    };
+    saveConfig();
+    document.getElementById('onboarding')?.classList.remove('open');
+    renderAll();
+  });
+
+  goToStep(1);
 }
 
 // ── OAuth Callback ─────────────────────────────────────────
