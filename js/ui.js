@@ -179,21 +179,25 @@ export class UI {
   }
 
   updateWeeklyKpis(activities) {
-    const kpiStrip = document.getElementById('weeklyKpis');
-    const kpiKm    = document.getElementById('kpiKm');
-    const kpiElev  = document.getElementById('kpiElev');
-    const kpiWeeks = document.getElementById('kpiWeeks'); // populated by plan
+    const kpiKm   = document.getElementById('kpiKm');
+    const kpiElev = document.getElementById('kpiElev');
 
-    if (!activities?.length) { if (kpiStrip) kpiStrip.style.display = 'none'; return; }
+    if (!activities?.length) {
+      if (kpiKm)   kpiKm.textContent   = '0';
+      if (kpiElev) kpiElev.textContent = '0';
+      return;
+    }
 
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const thisWeek   = activities.filter(a => new Date(a.start_date) >= oneWeekAgo);
     const weekKm     = thisWeek.reduce((s, a) => s + a.distance / 1000, 0);
     const weekElev   = thisWeek.reduce((s, a) => s + (a.total_elevation_gain || 0), 0);
 
-    if (kpiKm)    kpiKm.textContent    = weekKm.toFixed(1);
-    if (kpiElev)  kpiElev.textContent  = Math.round(weekElev);
-    if (kpiStrip) kpiStrip.style.display = '';
+    if (kpiKm)    kpiKm.textContent   = weekKm.toFixed(1);
+    if (kpiElev)  kpiElev.textContent = Math.round(weekElev);
+
+    const strip = document.getElementById('weeklyKpis');
+    if (strip) strip.style.display = '';
   }
 
   updateWeeksRemainingKpi(n) {

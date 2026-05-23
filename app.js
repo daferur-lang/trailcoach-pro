@@ -168,10 +168,12 @@ function showOnboarding() {
   });
 
   document.getElementById('obNext2')?.addEventListener('click', () => {
-    const dist = document.getElementById('obDistance')?.value;
-    const date = document.getElementById('obDate')?.value;
-    if (!dist) { shakeInput('obDistance'); return; }
-    if (!date) { shakeInput('obDate');     return; }
+    const dist = document.getElementById('obDistance')?.value?.trim();
+    const date = document.getElementById('obDate')?.value?.trim();
+    let hasError = false;
+    if (!date) { shakeInput('obDate');     hasError = true; }
+    if (!dist) { shakeInput('obDistance'); hasError = true; }
+    if (hasError) return;
     goToStep(3);
   });
 

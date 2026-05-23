@@ -4,6 +4,13 @@
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MONTH_ES  = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
+function formatMins(n) {
+  if (n < 60) return `${n} min`;
+  const h = Math.floor(n / 60);
+  const m = Math.round(n % 60);
+  return m > 0 ? `${h}h ${m} min` : `${h}h`;
+}
+
 // Session templates by phase
 const SESSIONS = {
   base: [
@@ -12,7 +19,7 @@ const SESSIONS = {
       name: 'Rodaje de recuperación + movilidad',
       type: 'easy',
       badgeClass: 'badge-rest',
-      durationFn: (km) => `${25 + Math.round(km * 0.3)} min`,
+      durationFn: (km) => formatMins(25 + Math.round(km * 0.3)),
       description: 'Rodaje muy suave en llano o ligeramente ondulado. Zona 1-2. Termina con 10 min de estiramientos dinámicos y movilidad de cadera.',
       tags: ['Zona 1-2', 'RPE 3-4', 'Llano', 'Movilidad']
     },
@@ -30,7 +37,7 @@ const SESSIONS = {
       name: 'Tirada larga suave',
       type: 'long',
       badgeClass: 'badge-long',
-      durationFn: (km) => `${Math.round(60 + km * 8)} min`,
+      durationFn: (km) => formatMins(Math.round(60 + km * 8)),
       description: 'Ritmo conversacional estricto (zona 2). El objetivo es tiempo en pies, no velocidad. Terreno trail con poco desnivel. Come y bebe desde el minuto 40.',
       tags: ['Zona 2', 'RPE 4-5', 'Trail', 'Base aeróbica']
     }
@@ -41,7 +48,7 @@ const SESSIONS = {
       name: 'Rodaje fácil en llano',
       type: 'easy',
       badgeClass: 'badge-easy',
-      durationFn: (km) => `${30 + Math.round(km * 0.4)} min`,
+      durationFn: (km) => formatMins(30 + Math.round(km * 0.4)),
       description: 'Recuperación activa post-semana. Zona 2 estricta. Puede ser asfalto o camino. Aprovecha para revisar sensaciones musculares.',
       tags: ['Zona 2', 'RPE 4', 'Recuperación', 'Llano']
     },
@@ -59,7 +66,7 @@ const SESSIONS = {
       name: 'Rodaje trail técnico',
       type: 'easy',
       badgeClass: 'badge-easy',
-      durationFn: (km) => `${50 + Math.round(km * 0.6)} min`,
+      durationFn: (km) => formatMins(50 + Math.round(km * 0.6)),
       description: 'Trail con terreno variado. Zona 2-3. Practicamente no pares. Trabaja la lectura del terreno y adaptación de la zancada. Incluye algo de D+ sin forzar.',
       tags: ['Zona 2-3', 'RPE 5-6', 'Técnica', 'Trail variado']
     },
@@ -68,7 +75,7 @@ const SESSIONS = {
       name: 'Tirada larga con desnivel',
       type: 'long',
       badgeClass: 'badge-long',
-      durationFn: (km) => `${Math.round(90 + km * 10)} min`,
+      durationFn: (km) => formatMins(Math.round(90 + km * 10)),
       description: 'Salida de montaña con D+ progresivo. Zona 2, caminar en pendientes >15%. Hidratación y nutrición cada 40-50 min. Esta sesión simula las exigencias de tu objetivo.',
       tags: ['Zona 2', 'RPE 5-6', 'D+ real', 'Nutrición en carrera']
     }
@@ -106,7 +113,7 @@ const SESSIONS = {
       name: 'Tirada ultra larga (pico de carga)',
       type: 'long',
       badgeClass: 'badge-long',
-      durationFn: (km) => `${Math.round(150 + km * 12)} min`,
+      durationFn: (km) => formatMins(Math.round(150 + km * 12)),
       description: 'Tu tirada más larga del ciclo. Zona 2 estricta. Practica tu protocolo de carrera: nutrición, hidratación, equipo. Camina en pendientes fuertes. Llega cansado pero no destruido.',
       tags: ['Zona 2', 'RPE 5', 'Simulacro carrera', 'Protocolo nutricional']
     }
