@@ -25,7 +25,7 @@ export const APP_CONFIG = {
   // Formato sugerido: TCP-NOMBRE-AÑO  (mayúsculas, sin espacios)
   // Deja el array vacío [] para desactivar el control de acceso.
   accessCodes: [
-    'TCP-DIEGO-2026',    // Admin — Diego Codarini
+    'TCP-DAFERUR-2026',  // Admin — Diego Codarini
     'TCP-CUMBRE-2026',   // #01
     'TCP-SENDERO-2026',  // #02
     'TCP-CIMA-2026',     // #03
