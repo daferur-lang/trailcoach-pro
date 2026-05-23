@@ -10,11 +10,9 @@
  */
 export const APP_CONFIG = {
   // Tu Strava Client ID (número, en strava.com/settings/api)
-  stravaClientId: '',
+  stravaClientId: '249650',
 
-  // URL de tu Cloudflare Worker desplegado
-  // Ejemplo: 'https://trailcoach-strava.tu-cuenta.workers.dev'
-  workerUrl: '',
+  workerUrl: 'https://trailcoach-strava.daferur.workers.dev',
 
   // Valores por defecto del atleta (se pueden cambiar en Ajustes)
   athleteName:  'Diego Codarini',
