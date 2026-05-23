@@ -1,0 +1,21 @@
+{
+  "name": "TrailCoach Pro",
+  "short_name": "TrailCoach",
+  "description": "Tu entrenador personal de trail running con IA",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF7F2",
+  "theme_color": "#E8621A",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["sports", "health", "fitness"],
+  "screenshots": []
+}

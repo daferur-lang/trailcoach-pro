@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#E8621A" id="themeColorMeta">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="TrailCoach Pro">
+  <title>TrailCoach Pro</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="brand-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M3 19 L8 11 L12 15 L16 8 L21 19 Z" fill="white" stroke="white" stroke-width=".5" stroke-linejoin="round"/>
+            <circle cx="18" cy="5" r="2" fill="rgba(255,255,255,.7)"/>
+          </svg>
+        </div>
+        <span class="brand-name">TrailCoach Pro</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="syncBtn" aria-label="Sincronizar Strava">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+        <button class="btn-icon" id="settingsBtn" aria-label="Configuración">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWS -->
+  <main class="app-main">
+
+    <!-- VIEW: PLAN -->
+    <section class="view active" id="viewPlan">
+      <div class="view-scroll">
+        <div class="plan-header">
+          <h1 class="view-title">Tu plan</h1>
+          <p class="plan-objective" id="planObjective">Cargando objetivo...</p>
+        </div>
+        <div class="kpi-strip" id="weeklyKpis" style="display:none;">
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiKm">—</div>
+            <div class="kpi-label">km esta semana</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiElev">—</div>
+            <div class="kpi-label">m D+ semana</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiWeeks">—</div>
+            <div class="kpi-label">semanas restantes</div>
+          </div>
+        </div>
+        <div class="section-label">
+          <span>Semana actual</span>
+          <button class="section-link" id="prevWeeksBtn">SEMANAS ANTERIORES</button>
+        </div>
+        <div id="currentWeekCard"></div>
+        <div class="section-label" style="margin-top:20px;">
+          <span>Próximas semanas</span>
+        </div>
+        <div id="upcomingWeeksList"></div>
+        <div id="planEmpty" class="empty-state" style="display:none;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <p>Configura tu objetivo en<br>Ajustes para ver tu plan</p>
+          <button class="btn-primary" id="openSettingsFromPlan">Configurar objetivo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: ACTIVIDADES -->
+    <section class="view" id="viewActividades">
+      <div class="view-scroll">
+        <div class="activities-header">
+          <h1 class="view-title">Actividades</h1>
+        </div>
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-pill active" id="yearFilter">
+            <span id="yearFilterLabel">Año</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-pill" id="monthFilter">
+            <span id="monthFilterLabel">Mes</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-pill" id="typeFilter">
+            <span id="typeFilterLabel">Tipo</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+        <div id="activitiesList">
+          <div class="empty-state" id="activitiesEmpty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <p>Conecta Strava para ver<br>tus actividades</p>
+            <button class="btn-primary" id="connectStravaBtn">Conectar Strava</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: TÚ -->
+    <section class="view" id="viewTu">
+      <div class="view-scroll">
+        <div class="profile-header">
+          <h1 class="view-title">Tú</h1>
+          <button class="btn-icon" id="profileMenuBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+            </svg>
+          </button>
+        </div>
+        <div id="athleteCardWrapper" class="athlete-card-wrapper"></div>
+        <div id="statsList" class="stats-list"></div>
+      </div>
+    </section>
+
+    <!-- VIEW: COACH -->
+    <section class="view" id="viewCoach">
+      <div class="coach-layout">
+        <div class="coach-header">
+          <div class="coach-info">
+            <div class="coach-avatar">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div>
+              <div class="coach-name">ProRun Coach</div>
+              <div class="coach-status" id="coachStatus">Listo para entrenar</div>
+            </div>
+          </div>
+          <button class="btn-icon" id="clearChatBtn" aria-label="Limpiar chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+          </button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-row coach">
+            <div class="chat-bubble coach-bubble">
+              Hola, soy tu ProRun Coach. Tengo acceso a tu historial de Strava y tu plan de entrenamiento.<br><br>
+              ¿En qué puedo ayudarte hoy?
+            </div>
+            <span class="chat-ts" id="welcomeTs"></span>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="quick-chips" id="quickChips">
+            <button class="chip" data-msg="¿Cuál es mi entrenamiento de hoy?">Entrenamiento de hoy</button>
+            <button class="chip" data-msg="¿Cómo llego descansado a la próxima carrera larga?">Preparar tirada larga</button>
+            <button class="chip" data-msg="¿Qué como antes de una tirada larga de más de 3 horas?">Nutrición pre-larga</button>
+            <button class="chip" data-msg="Esta semana solo puedo entrenar 2 días. Ajusta mi plan.">Solo 2 días esta semana</button>
+            <button class="chip" data-msg="¿Cómo está evolucionando mi rendimiento según Strava?">Mi progreso</button>
+            <button class="chip" data-msg="Tengo agujetas en piernas. ¿Entreno o descanso hoy?">Agujetas, ¿entreno?</button>
+          </div>
+          <div class="chat-input-row">
+            <input
+              type="text"
+              class="chat-input"
+              id="chatInput"
+              placeholder="Escribe un mensaje..."
+              autocomplete="off"
+              enterkeyhint="send"
+              maxlength="500"
+            >
+            <button class="btn-send" id="sendBtn" aria-label="Enviar" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-view="plan">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <span>Plan</span>
+    </button>
+    <button class="nav-item" data-view="actividades">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      <span>Actividades</span>
+    </button>
+    <button class="nav-item" data-view="tu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span>Tú</span>
+    </button>
+    <button class="nav-item" data-view="coach">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Coach</span>
+    </button>
+  </nav>
+
+</div><!-- .app-shell -->
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h2 class="modal-title" id="settingsTitle">Configuración</h2>
+      <button class="btn-icon" id="closeSettingsBtn" aria-label="Cerrar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Strava -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#FC4C02">
+            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+          </svg>
+          <span>Conexión Strava</span>
+        </div>
+        <div class="strava-status disconnected" id="stravaStatus">
+          <span id="stravaStatusText">No conectado</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Client ID</label>
+          <input type="text" class="form-input" id="stravaClientId" placeholder="Tu Strava Client ID" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Client Secret</label>
+          <input type="password" class="form-input" id="stravaClientSecret" placeholder="Tu Strava Client Secret">
+        </div>
+        <button class="btn-strava" id="stravaConnectBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+          </svg>
+          Conectar con Strava
+        </button>
+        <button class="btn-secondary" id="stravaDisconnectBtn" style="display:none; margin-top:8px;">Desconectar Strava</button>
+        <p class="form-hint mt-8">Crea tu app en strava.com/settings/api. Redirect URI: <span id="redirectUriHint" style="color:var(--c-primary);font-weight:600;"></span></p>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <!-- Claude API -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          <span>IA Coach — Claude API</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">API Key de Anthropic</label>
+          <input type="password" class="form-input" id="claudeApiKey" placeholder="sk-ant-api03-...">
+          <p class="form-hint">Solo se guarda en este dispositivo. Obtén tu clave en console.anthropic.com</p>
+        </div>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <!-- Objetivo -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-primary)" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="6"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+          <span>Tu objetivo</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre del atleta</label>
+          <input type="text" class="form-input" id="athleteName" placeholder="Tu nombre completo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre de la carrera (opcional)</label>
+          <input type="text" class="form-input" id="goalName" placeholder="Ej: Ultra Sierra 65K">
+        </div>
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label class="form-label">Distancia (km)</label>
+            <input type="number" class="form-input" id="goalDistance" placeholder="65" min="1" max="350">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Desnivel (m D+)</label>
+            <input type="number" class="form-input" id="goalElevation" placeholder="2000" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha del objetivo</label>
+          <input type="date" class="form-input" id="goalDate">
+        </div>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <!-- Apariencia -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <span>Apariencia</span>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Modo oscuro</span>
+          <button class="toggle-btn" id="darkModeToggle" role="switch" aria-checked="false">
+            <span class="toggle-thumb"></span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary full-width" id="saveSettingsBtn">Guardar configuración</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dropdown for filters -->
+<div class="dropdown" id="filterDropdown" style="display:none;">
+  <div id="filterDropdownInner"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none;">
+  <div class="loading-spinner"></div>
+  <p class="loading-text" id="loadingText">Sincronizando...</p>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
