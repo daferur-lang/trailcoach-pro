@@ -1,7 +1,7 @@
 // Strava API v3 — OAuth 2.0 + Activities
-const STRAVA_API   = 'https://www.strava.com/api/v3';
-const TOKEN_URL    = 'https://www.strava.com/oauth/token';
-const AUTH_URL     = 'https://www.strava.com/oauth/authorize';
+// El client_secret vive en el Cloudflare Worker, nunca en el frontend.
+const STRAVA_API = 'https://www.strava.com/api/v3';
+const AUTH_URL   = 'https://www.strava.com/oauth/authorize';
 const CACHE_KEY    = 'tc_activities';
 const TOKENS_KEY   = 'tc_strava_tokens';
 const ATHLETE_KEY  = 'tc_strava_athlete';
@@ -45,18 +45,9 @@ export class StravaClient {
     return url.toString();
   }
 
-  // Exchange authorization code for tokens
+  // Exchange authorization code for tokens via Cloudflare Worker
   async exchangeCode(code) {
-    const resp = await fetch(TOKEN_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        client_id:     this._config.clientId,
-        client_secret: this._config.clientSecret,
-        code,
-        grant_type: 'authorization_code'
-      })
-    });
+    const resp = await this._workerFetch({ grant_type: 'authorization_code', code });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));
       throw new Error(err.message || `Auth failed: ${resp.status}`);
@@ -70,23 +61,27 @@ export class StravaClient {
     return data;
   }
 
-  // Refresh expired access token
+  // Refresh expired access token via Cloudflare Worker
   async refreshToken() {
     if (!this.tokens?.refresh_token) throw new Error('No refresh token');
-    const resp = await fetch(TOKEN_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        client_id:     this._config.clientId,
-        client_secret: this._config.clientSecret,
-        grant_type:    'refresh_token',
-        refresh_token: this.tokens.refresh_token
-      })
+    const resp = await this._workerFetch({
+      grant_type:    'refresh_token',
+      refresh_token: this.tokens.refresh_token
     });
     if (!resp.ok) throw new Error('Token refresh failed');
     const data = await resp.json();
     this._saveTokens(data);
     return data;
+  }
+
+  _workerFetch(body) {
+    const workerUrl = this._config.workerUrl;
+    if (!workerUrl) throw new Error('Worker URL no configurada. Ve a Ajustes.');
+    return fetch(workerUrl, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(body)
+    });
   }
 
   _saveTokens(data) {

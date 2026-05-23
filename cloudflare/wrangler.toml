@@ -1,0 +1,11 @@
+name = "trailcoach-strava"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+# Secrets (NO pongas valores reales aquí, usa: wrangler secret put NOMBRE)
+# STRAVA_CLIENT_ID     → wrangler secret put STRAVA_CLIENT_ID
+# STRAVA_CLIENT_SECRET → wrangler secret put STRAVA_CLIENT_SECRET
+# ALLOWED_ORIGIN       → wrangler secret put ALLOWED_ORIGIN  (opcional)
+
+# Después del deploy, tu Worker URL será:
+# https://trailcoach-strava.<tu-cuenta>.workers.dev

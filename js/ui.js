@@ -74,10 +74,10 @@ export class UI {
 
   loadSettingsValues(config) {
     const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
-    set('stravaClientId',     config.stravaClientId);
-    set('stravaClientSecret', config.stravaClientSecret);
-    set('claudeApiKey',       config.claudeApiKey);
-    set('athleteName',        config.athleteName);
+    set('workerUrl',      config.workerUrl);
+    set('stravaClientId', config.stravaClientId);
+    set('groqApiKey',     config.groqApiKey);
+    set('athleteName',    config.athleteName);
     set('goalName',           config.goalName);
     set('goalDistance',       config.goalDistance);
     set('goalElevation',      config.goalElevation);
@@ -99,10 +99,10 @@ export class UI {
     const val = id => document.getElementById(id)?.value?.trim() || '';
     const toggle = document.getElementById('darkModeToggle');
     return {
-      stravaClientId:     val('stravaClientId'),
-      stravaClientSecret: val('stravaClientSecret'),
-      claudeApiKey:       val('claudeApiKey'),
-      athleteName:        val('athleteName'),
+      workerUrl:      val('workerUrl'),
+      stravaClientId: val('stravaClientId'),
+      groqApiKey:     val('groqApiKey'),
+      athleteName:    val('athleteName'),
       goalName:           val('goalName'),
       goalDistance:       parseFloat(val('goalDistance')) || null,
       goalElevation:      parseFloat(val('goalElevation')) || null,
