@@ -750,7 +750,7 @@ img, svg { display: block; }
 
 .card-name {
   position: absolute;
-  bottom: 62px;
+  bottom: 85px;
   left: 0;
   right: 0;
   text-align: center;
@@ -767,7 +767,7 @@ img, svg { display: block; }
 
 .card-stats {
   position: absolute;
-  bottom: 18px;
+  bottom: 55px;
   left: 0;
   right: 0;
   display: grid;
