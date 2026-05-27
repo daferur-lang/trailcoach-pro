@@ -277,14 +277,19 @@
           <label class="form-label">Client Secret</label>
           <input type="password" class="form-input" id="stravaClientSecret" placeholder="Tu Strava Client Secret">
         </div>
-        <button class="btn-strava" id="stravaConnectBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
-          </svg>
-          Conectar con Strava
-        </button>
-        <button class="btn-secondary" id="stravaDisconnectBtn" style="display:none; margin-top:8px;">Desconectar Strava</button>
-        <p class="form-hint mt-8">Crea tu app en strava.com/settings/api. Redirect URI: <span id="redirectUriHint" style="color:var(--c-primary);font-weight:600;"></span></p>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+          <button class="btn-strava" id="stravaConnectBtn" style="flex:1;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+            </svg>
+            Conectar con Strava
+          </button>
+          <button class="btn-secondary" id="stravaHelpBtn" style="white-space:nowrap;" title="Cómo obtener tus credenciales">¿Cómo lo hago?</button>
+        </div>
+        <button class="btn-secondary" id="stravaDisconnectBtn" style="display:none; margin-top:8px; width:100%;">Desconectar Strava</button>
+        <p class="form-hint mt-8">
+          Redirect URI para tu app: <span id="redirectUriHint" style="color:var(--c-primary);font-weight:600;"></span>
+        </p>
       </div>
 
       <div class="settings-divider"></div>
@@ -393,5 +398,36 @@
 </div>
 
 <script type="module" src="app.js"></script>
+
+<!-- STRAVA HELP MODAL -->
+<div class="modal-overlay" id="stravaHelpModal" role="dialog" aria-modal="true" aria-labelledby="stravaHelpTitle">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h2 class="modal-title" id="stravaHelpTitle">Cómo conectar Strava</h2>
+      <button class="btn-icon" id="closeStravaHelpBtn" aria-label="Cerrar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <ol style="padding-left:20px;line-height:2;color:var(--text-1);font-size:15px;">
+        <li>Ve a <a href="https://www.strava.com/settings/api" target="_blank" rel="noopener" style="color:var(--c-primary);font-weight:600;">strava.com/settings/api →</a></li>
+        <li>Inicia sesión si hace falta</li>
+        <li>Rellena el formulario:<br>
+          <span style="color:var(--text-2);font-size:13px;">
+            · <b>Application Name:</b> cualquier nombre (ej. "TrailCoach")<br>
+            · <b>Category:</b> Training<br>
+            · <b>Website:</b> puedes poner cualquier URL<br>
+            · <b>Authorization Callback Domain:</b> <span id="helpCallbackDomain" style="color:var(--c-primary);font-weight:600;"></span>
+          </span>
+        </li>
+        <li>Haz clic en <b>Save</b> o <b>Update</b></li>
+        <li>Copia el <b>Client ID</b> (número) y el <b>Client Secret</b> y pégalos en Ajustes</li>
+      </ol>
+    </div>
+  </div>
+</div>
 </body>
 </html>

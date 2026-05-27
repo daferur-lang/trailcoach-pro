@@ -212,6 +212,20 @@ function bindEvents() {
     window.location.href = strava.getAuthUrl();
   });
 
+  // Strava help modal
+  document.getElementById('stravaHelpBtn')?.addEventListener('click', () => {
+    const domain = new URL(window.location.href).hostname;
+    const el = document.getElementById('helpCallbackDomain');
+    if (el) el.textContent = domain;
+    document.getElementById('stravaHelpModal')?.classList.add('open');
+  });
+  document.getElementById('closeStravaHelpBtn')?.addEventListener('click', () => {
+    document.getElementById('stravaHelpModal')?.classList.remove('open');
+  });
+  document.getElementById('stravaHelpModal')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+  });
+
   // Strava disconnect
   document.getElementById('stravaDisconnectBtn')?.addEventListener('click', () => {
     strava.disconnect();
