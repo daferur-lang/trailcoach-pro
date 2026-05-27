@@ -39,16 +39,16 @@ export default {
       return json({ error: 'Invalid JSON' }, 400, CORS);
     }
 
-    const { grant_type, code, refresh_token } = body;
+    const { grant_type, code, refresh_token, client_id, client_secret } = body;
 
     if (!grant_type) {
       return json({ error: 'grant_type required' }, 400, CORS);
     }
 
-    // Build Strava token request
+    // Build Strava token request — prefer per-user credentials over env vars
     const stravaBody = {
-      client_id:     env.STRAVA_CLIENT_ID,
-      client_secret: env.STRAVA_CLIENT_SECRET,
+      client_id:     client_id     || env.STRAVA_CLIENT_ID,
+      client_secret: client_secret || env.STRAVA_CLIENT_SECRET,
       grant_type,
     };
 

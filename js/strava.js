@@ -77,10 +77,13 @@ export class StravaClient {
   _workerFetch(body) {
     const workerUrl = this._config.workerUrl;
     if (!workerUrl) throw new Error('Worker URL no configurada. Ve a Ajustes.');
+    const payload = { ...body };
+    if (this._config.clientId)     payload.client_id     = this._config.clientId;
+    if (this._config.clientSecret) payload.client_secret = this._config.clientSecret;
     return fetch(workerUrl, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(body)
+      body:    JSON.stringify(payload)
     });
   }
 
