@@ -29,7 +29,7 @@ export class StravaClient {
   getAuthUrl() {
     const redirectUri = this._getRedirectUri();
     const params = new URLSearchParams({
-      client_id:     this._config.clientId,
+      client_id:     this._config.stravaClientId,
       redirect_uri:  redirectUri,
       response_type: 'code',
       approval_prompt: 'auto',
@@ -51,8 +51,8 @@ export class StravaClient {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        client_id:     this._config.clientId,
-        client_secret: this._config.clientSecret,
+        client_id:     this._config.stravaClientId,
+        client_secret: this._config.stravaClientSecret,
         code,
         grant_type: 'authorization_code'
       })
@@ -77,8 +77,8 @@ export class StravaClient {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        client_id:     this._config.clientId,
-        client_secret: this._config.clientSecret,
+        client_id:     this._config.stravaClientId,
+        client_secret: this._config.stravaClientSecret,
         grant_type:    'refresh_token',
         refresh_token: this.tokens.refresh_token
       })

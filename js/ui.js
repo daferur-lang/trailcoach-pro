@@ -76,7 +76,7 @@ export class UI {
     const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
     set('stravaClientId',     config.stravaClientId);
     set('stravaClientSecret', config.stravaClientSecret);
-    set('claudeApiKey',       config.claudeApiKey);
+    set('groqApiKey',       config.groqApiKey);
     set('athleteName',        config.athleteName);
     set('goalName',           config.goalName);
     set('goalDistance',       config.goalDistance);
@@ -101,7 +101,7 @@ export class UI {
     return {
       stravaClientId:     val('stravaClientId'),
       stravaClientSecret: val('stravaClientSecret'),
-      claudeApiKey:       val('claudeApiKey'),
+      groqApiKey:       val('groqApiKey'),
       athleteName:        val('athleteName'),
       goalName:           val('goalName'),
       goalDistance:       parseFloat(val('goalDistance')) || null,
