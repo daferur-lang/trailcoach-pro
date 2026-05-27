@@ -41,8 +41,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Register service worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
-    navigator.serviceWorker.addEventListener('message', e => {
-      if (e.data?.type === 'RELOAD') window.location.reload();
+
+    // Auto-update: cuando el SW nuevo toma el control, recarga la página
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+
+    // Forzar comprobación de actualizaciones al volver a la app
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        navigator.serviceWorker.ready.then(reg => reg.update());
+      }
     });
   }
 

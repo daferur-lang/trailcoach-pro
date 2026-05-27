@@ -22,18 +22,9 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => {
-      const old = keys.filter(k => k !== CACHE_NAME);
-      return Promise.all(old.map(k => caches.delete(k)))
-        .then(() => self.clients.claim())
-        .then(() => {
-          if (old.length > 0) {
-            return self.clients.matchAll({ type: 'window' }).then(clients =>
-              clients.forEach(c => c.postMessage({ type: 'RELOAD' }))
-            );
-          }
-        });
-    })
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
