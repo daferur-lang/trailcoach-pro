@@ -1,171 +1,232 @@
 /**
- * TrailCoach Pro — Strava API Setup
+ * TrailCoach Pro — Strava Full Setup (100% automático)
  *
- * Configura automáticamente:
- *   1. Authorization Callback Domain → daferur-lang.github.io
- *   2. Website → https://daferur-lang.github.io/trailcoach-pro/
- *   3. Rellena el formulario de Extended API Access (para levantar el límite de atletas)
+ * Qué hace:
+ *   1. Login en Strava
+ *   2. Actualiza Authorization Callback Domain → daferur-lang.github.io
+ *   3. Actualiza Website → https://daferur-lang.github.io/trailcoach-pro/
+ *   4. Rellena y envía el formulario Developer Program (aumento de atletas)
  *
- * Uso:
- *   npm install playwright          (solo la primera vez)
- *   node strava-setup.js
- *
- * Opcional — login automático:
+ * Uso — pon tus credenciales como variables de entorno:
  *   STRAVA_EMAIL=tu@email.com STRAVA_PASSWORD=tupass node strava-setup.js
+ *
+ * Instalación (una sola vez):
+ *   npm install playwright
  */
 
 const { chromium } = require('playwright');
 const readline = require('readline');
 
+// ── Configuración de la app ────────────────────────────────────────────────
+const CLIENT_ID    = '249650';
+const APP_NAME     = 'TrailCoach Pro';
 const APP_URL      = 'https://daferur-lang.github.io/trailcoach-pro/';
 const CALLBACK_DOM = 'daferur-lang.github.io';
+const CONTACT_EMAIL = 'daferur@gmail.com';
+const NUM_ATHLETES  = '20';
 
-// ── Extended API Access form answers ──────────────────────────────────────
-const APP_DESCRIPTION = [
-  'TrailCoach Pro es una PWA de entrenamiento personal para trail runners.',
-  'Los atletas conectan su cuenta de Strava para analizar su historial de actividades,',
-  'recibir planes de entrenamiento personalizados con IA y hacer seguimiento de su',
-  'progreso hacia un objetivo de carrera. Es una herramienta de coaching individual,',
-  'no comercial, para un grupo cerrado de ~20 deportistas.'
-].join(' ');
+const APP_DESCRIPTION =
+  'TrailCoach Pro is a personal coaching PWA for trail runners. ' +
+  'Athletes connect their Strava account to analyze their activity history, ' +
+  'receive AI-generated training plans tailored to their goals, and track ' +
+  'progress toward a target race. It is a closed-group tool for approximately ' +
+  '20 athletes, fully non-commercial and personal use only.';
 
-async function pause(ms) {
+const REASON_FOR_INCREASE =
+  'I am coaching a small private group of ~20 trail runners. Each athlete needs ' +
+  'to connect their own Strava account to access their personal activity data. ' +
+  'The app only reads activity data (read + activity:read_all scopes) and never ' +
+  'writes or modifies any data. All usage is personal and non-commercial.';
+
+// ──────────────────────────────────────────────────────────────────────────
+
+function pause(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
-async function waitForUser(msg) {
+async function ask(question) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   return new Promise(resolve => {
-    rl.question(`\n⏸  ${msg}\n   Pulsa ENTER cuando estés listo... `, () => {
-      rl.close();
-      resolve();
-    });
+    rl.question(question, answer => { rl.close(); resolve(answer); });
   });
 }
 
+async function tryFill(page, selectors, value) {
+  for (const sel of selectors) {
+    try {
+      const el = page.locator(sel).first();
+      if (await el.isVisible({ timeout: 2000 })) {
+        await el.fill(value);
+        return true;
+      }
+    } catch {}
+  }
+  return false;
+}
+
+async function tryClick(page, selectors) {
+  for (const sel of selectors) {
+    try {
+      const el = page.locator(sel).first();
+      if (await el.isVisible({ timeout: 2000 })) {
+        await el.click();
+        return true;
+      }
+    } catch {}
+  }
+  return false;
+}
+
 (async () => {
-  console.log('\n🚀  TrailCoach Pro — Strava Setup\n');
+  console.log('\n╔══════════════════════════════════════════╗');
+  console.log('║   TrailCoach Pro — Strava Full Setup     ║');
+  console.log('╚══════════════════════════════════════════╝\n');
+
+  // Credenciales
+  const email    = process.env.STRAVA_EMAIL    || await ask('Email de Strava: ');
+  const password = process.env.STRAVA_PASSWORD || await ask('Contraseña de Strava: ');
+
+  console.log('\n🚀  Iniciando navegador…\n');
 
   const browser = await chromium.launch({
     headless: false,
-    args: ['--start-maximized'],
-    slowMo: 60,
+    args: ['--start-maximized', '--no-sandbox'],
+    slowMo: 80,
   });
 
   const ctx  = await browser.newContext({ viewport: null });
   const page = await ctx.newPage();
 
-  // ── 1. LOGIN ──────────────────────────────────────────────────────────
-  console.log('1/4  Abriendo Strava login…');
-  await page.goto('https://www.strava.com/login', { waitUntil: 'domcontentloaded' });
+  // ── PASO 1: LOGIN ─────────────────────────────────────────────────────
+  console.log('[ 1/4 ] Login en Strava…');
+  await page.goto('https://www.strava.com/login', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.fill('#email',    email);
+  await page.fill('#password', password);
+  await page.click('[type=submit]');
 
-  const email    = process.env.STRAVA_EMAIL;
-  const password = process.env.STRAVA_PASSWORD;
-
-  if (email && password) {
-    console.log('     Usando credenciales de variables de entorno…');
-    await page.fill('#email',    email);
-    await page.fill('#password', password);
-    await page.click('[type=submit]');
-    await page.waitForURL('**/dashboard**', { timeout: 15000 }).catch(() => {});
-    console.log('     Login completado.');
-  } else {
-    console.log('     Por favor, inicia sesión en la ventana del navegador.');
-    await waitForUser('Inicia sesión en Strava y vuelve aquí.');
+  try {
+    await page.waitForURL(u => !u.includes('/login'), { timeout: 15000 });
+    console.log('        ✅  Login correcto.\n');
+  } catch {
+    console.log('        ⚠️  Timeout esperando redirect post-login.');
+    console.log('           Si hay captcha, resuélvelo manualmente en el navegador.');
+    await ask('           Pulsa ENTER cuando estés dentro del dashboard… ');
   }
 
-  // ── 2. ABRIR AJUSTES DE LA API ────────────────────────────────────────
-  console.log('\n2/4  Abriendo ajustes de la API de Strava…');
-  await page.goto('https://www.strava.com/settings/api', { waitUntil: 'networkidle' });
+  // ── PASO 2: AJUSTES DE LA API ─────────────────────────────────────────
+  console.log('[ 2/4 ] Actualizando ajustes de la API de Strava…');
+  await page.goto('https://www.strava.com/settings/api', { waitUntil: 'networkidle', timeout: 20000 });
   await pause(1500);
 
-  const currentUrl = page.url();
-  if (!currentUrl.includes('/settings/api')) {
-    console.error('❌  No se pudo llegar a /settings/api. ¿Estás logueado?');
-    await waitForUser('Navega manualmente a strava.com/settings/api y pulsa ENTER.');
-  }
+  const websiteFilled  = await tryFill(page,
+    ['input[name="application[website]"]', 'input#application_website', 'input[placeholder*="ebsite"]'],
+    APP_URL);
 
-  // ── 3. ACTUALIZAR CALLBACK DOMAIN Y WEBSITE ───────────────────────────
-  console.log('3/4  Actualizando Authorization Callback Domain y Website…');
+  const callbackFilled = await tryFill(page,
+    ['input[name="application[authorization_callback_domain]"]', 'input#application_authorization_callback_domain'],
+    CALLBACK_DOM);
 
-  // Website
-  const websiteField = page.locator('input[name="application[website]"], input#application_website').first();
-  if (await websiteField.isVisible({ timeout: 3000 }).catch(() => false)) {
-    await websiteField.fill(APP_URL);
-    console.log(`     Website → ${APP_URL}`);
-  } else {
-    console.log('     ⚠️  Campo Website no encontrado, saltando…');
-  }
-
-  // Authorization Callback Domain
-  const callbackField = page.locator(
-    'input[name="application[authorization_callback_domain]"], input#application_authorization_callback_domain'
-  ).first();
-
-  if (await callbackField.isVisible({ timeout: 3000 }).catch(() => false)) {
-    const current = await callbackField.inputValue();
-    console.log(`     Callback domain actual: "${current}"`);
-    await callbackField.fill(CALLBACK_DOM);
-    console.log(`     Callback domain nuevo:  "${CALLBACK_DOM}"`);
-  } else {
-    console.log('     ⚠️  Campo Callback Domain no encontrado, saltando…');
-  }
-
-  // Guardar
-  const saveBtn = page.locator('button[type=submit], input[type=submit]').first();
-  if (await saveBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await saveBtn.click();
+  if (websiteFilled || callbackFilled) {
+    const saved = await tryClick(page,
+      ['button[type=submit]', 'input[type=submit]', 'button:has-text("Update")', 'button:has-text("Save")']);
     await pause(2000);
-    console.log('     ✅  Ajustes guardados.');
+    console.log(`        Website:         ${websiteFilled  ? '✅' : '⚠️ no encontrado'} → ${APP_URL}`);
+    console.log(`        Callback domain: ${callbackFilled ? '✅' : '⚠️ no encontrado'} → ${CALLBACK_DOM}`);
+    console.log(`        Guardado:        ${saved ? '✅' : '⚠️ botón no encontrado'}`);
   } else {
-    await waitForUser('Guarda los cambios manualmente y pulsa ENTER.');
+    console.log('        ⚠️  No se encontraron los campos (puede que ya estén configurados).');
   }
 
   await page.screenshot({ path: 'strava-api-settings.png', fullPage: true });
-  console.log('     📸  Captura guardada: strava-api-settings.png');
+  console.log('        📸  strava-api-settings.png\n');
 
-  // ── 4. SOLICITAR EXTENDED API ACCESS ──────────────────────────────────
-  console.log('\n4/4  Buscando formulario de Extended API Access…');
+  // ── PASO 3: FORMULARIO DEVELOPER PROGRAM ──────────────────────────────
+  console.log('[ 3/4 ] Abriendo formulario Developer Program (aumento de atletas)…');
+  await page.goto('https://developers.strava.com/docs/rate-limits/', { waitUntil: 'networkidle', timeout: 20000 });
+  await pause(2000);
 
-  // El enlace puede estar en /settings/api como botón o enlace
-  const extLink = page.locator('a:has-text("Extended"), a:has-text("extended"), button:has-text("Request")').first();
+  // Scroll hasta el final para encontrar el formulario
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await pause(1500);
 
-  if (await extLink.isVisible({ timeout: 3000 }).catch(() => false)) {
-    await extLink.click();
-    await pause(2000);
-  } else {
-    // Intentar URL directa del formulario
-    await page.goto('https://www.strava.com/developers/request-access', { waitUntil: 'networkidle' }).catch(() => {});
-    await pause(1500);
-    if (!page.url().includes('request') && !page.url().includes('form')) {
-      console.log('     ℹ️  El formulario de Extended Access puede no estar en una URL fija.');
-      console.log('     Búscalo en strava.com/settings/api → "Request Extended API Access".');
-      await waitForUser('Abre el formulario manualmente y pulsa ENTER cuando esté visible.');
+  // Buscar iframe del formulario (Typeform, Google Form, etc.)
+  const frames = page.frames();
+  let formFrame = null;
+  for (const frame of frames) {
+    const url = frame.url();
+    if (url.includes('typeform') || url.includes('google') || url.includes('form')) {
+      formFrame = frame;
+      console.log(`        Frame del formulario encontrado: ${url}`);
+      break;
     }
   }
 
-  // Rellenar descripción si el campo existe
-  const descField = page.locator('textarea').first();
-  if (await descField.isVisible({ timeout: 3000 }).catch(() => false)) {
-    await descField.fill(APP_DESCRIPTION);
-    console.log('     Descripción de la app rellenada.');
-    await page.screenshot({ path: 'strava-extended-form.png', fullPage: true });
-    console.log('     📸  Captura del formulario: strava-extended-form.png');
-    await waitForUser('Revisa el formulario, completa cualquier campo extra y ENVÍALO manualmente. Luego pulsa ENTER.');
+  // Si hay un enlace al formulario externo, seguirlo
+  if (!formFrame) {
+    const formLink = page.locator('a[href*="typeform"], a[href*="form"], a[href*="google"], a:has-text("form"), a:has-text("Form"), a:has-text("request"), a:has-text("Request")').first();
+    const href = await formLink.getAttribute('href').catch(() => null);
+    if (href) {
+      console.log(`        Redirigiendo al formulario: ${href}`);
+      await page.goto(href, { waitUntil: 'networkidle', timeout: 20000 });
+      await pause(2000);
+    }
+  }
+
+  await page.screenshot({ path: 'strava-form-page.png', fullPage: true });
+  console.log('        📸  strava-form-page.png');
+
+  // ── PASO 4: RELLENAR FORMULARIO ───────────────────────────────────────
+  console.log('\n[ 4/4 ] Rellenando formulario…');
+
+  const target = formFrame || page;
+
+  // Intentar rellenar campos comunes del formulario
+  const filled = {
+    clientId:     await tryFill(target, ['input[name*="client"], input[placeholder*="Client"], input[placeholder*="client"], input[placeholder*="ID"], input[placeholder*="id"]'], CLIENT_ID),
+    appName:      await tryFill(target, ['input[name*="name"], input[placeholder*="name"], input[placeholder*="Name"], input[placeholder*="app"]'], APP_NAME),
+    website:      await tryFill(target, ['input[name*="website"], input[name*="url"], input[placeholder*="website"], input[placeholder*="URL"]'], APP_URL),
+    email:        await tryFill(target, ['input[type="email"], input[name*="email"], input[placeholder*="email"], input[placeholder*="Email"]'], CONTACT_EMAIL),
+    numAthletes:  await tryFill(target, ['input[name*="athlete"], input[placeholder*="athlete"], input[placeholder*="Athlete"], input[name*="user"], input[name*="number"]'], NUM_ATHLETES),
+    description:  await tryFill(target, ['textarea[name*="description"], textarea[placeholder*="description"], textarea[placeholder*="Description"], textarea:first-of-type'], APP_DESCRIPTION),
+    reason:       await tryFill(target, ['textarea[name*="reason"], textarea[placeholder*="reason"], textarea[placeholder*="Reason"], textarea:nth-of-type(2)'], REASON_FOR_INCREASE),
+  };
+
+  console.log('\n   Campos rellenados:');
+  Object.entries(filled).forEach(([k, v]) => console.log(`   • ${k.padEnd(14)} ${v ? '✅' : '—  (no encontrado)'}`));
+
+  await page.screenshot({ path: 'strava-form-filled.png', fullPage: true });
+  console.log('\n   📸  strava-form-filled.png');
+
+  // Intentar enviar
+  const submitted = await tryClick(page,
+    ['button[type=submit]', 'input[type=submit]', 'button:has-text("Submit")', 'button:has-text("Send")', 'button:has-text("Enviar")']);
+
+  if (submitted) {
+    await pause(3000);
+    await page.screenshot({ path: 'strava-form-submitted.png', fullPage: true });
+    console.log('\n✅  Formulario enviado.');
+    console.log('   📸  strava-form-submitted.png');
   } else {
-    console.log('     ℹ️  Formulario no encontrado automáticamente.');
-    await waitForUser('Rellena y envía el formulario de Extended API Access manualmente, luego ENTER.');
+    console.log('\n⚠️  No se encontró botón de envío automático.');
+    console.log('   Por favor, revisa el formulario en el navegador y envíalo manualmente.');
+    await ask('   Pulsa ENTER cuando lo hayas enviado… ');
   }
 
   // ── RESUMEN ───────────────────────────────────────────────────────────
-  console.log('\n✅  Configuración completada:');
-  console.log(`   • Authorization Callback Domain: ${CALLBACK_DOM}`);
-  console.log(`   • Website: ${APP_URL}`);
-  console.log('   • Formulario Extended API Access: enviado (revisa tu email)');
-  console.log('\n   Capturas guardadas:');
-  console.log('   • strava-api-settings.png');
-  console.log('   • strava-extended-form.png');
-  console.log('\n   Cierra el navegador cuando quieras.\n');
+  console.log('\n╔══════════════════════════════════════════╗');
+  console.log('║   ✅  Configuración completada            ║');
+  console.log('╚══════════════════════════════════════════╝');
+  console.log(`\n  Client ID:       ${CLIENT_ID}`);
+  console.log(`  Callback domain: ${CALLBACK_DOM}`);
+  console.log(`  Website:         ${APP_URL}`);
+  console.log('\n  Capturas guardadas:');
+  console.log('  • strava-api-settings.png');
+  console.log('  • strava-form-page.png');
+  console.log('  • strava-form-filled.png');
+  console.log('  • strava-form-submitted.png  (si se envió automáticamente)');
+  console.log('\n  Strava tarda 7-10 días hábiles en aprobar el aumento de atletas.');
+  console.log('  Te notificarán por email a ' + CONTACT_EMAIL + '.\n');
 
+  await ask('Pulsa ENTER para cerrar el navegador… ');
   await browser.close();
 })();
