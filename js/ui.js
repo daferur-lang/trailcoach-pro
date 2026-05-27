@@ -74,7 +74,6 @@ export class UI {
 
   loadSettingsValues(config) {
     const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
-    set('workerUrl',          config.workerUrl);
     set('stravaClientId',     config.stravaClientId);
     set('stravaClientSecret', config.stravaClientSecret);
     set('groqApiKey',         config.groqApiKey);
@@ -89,10 +88,7 @@ export class UI {
 
     const redirectSpan = document.getElementById('redirectUriHint');
     if (redirectSpan) {
-      const url = new URL(window.location.href);
-      url.search = '';
-      url.hash = '';
-      redirectSpan.textContent = url.toString();
+      redirectSpan.textContent = new URL(window.location.href).hostname;
     }
   }
 
@@ -100,7 +96,6 @@ export class UI {
     const val = id => document.getElementById(id)?.value?.trim() || '';
     const toggle = document.getElementById('darkModeToggle');
     return {
-      workerUrl:          val('workerUrl'),
       stravaClientId:     val('stravaClientId'),
       stravaClientSecret: val('stravaClientSecret'),
       groqApiKey:         val('groqApiKey'),

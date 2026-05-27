@@ -313,7 +313,7 @@ function bindEvents() {
   // Guardar configuración
   document.getElementById('saveSettingsBtn')?.addEventListener('click', () => {
     const newConfig = ui.readSettingsValues();
-    state.config = { ...DEFAULT_CONFIG, ...newConfig };
+    state.config = { ...DEFAULT_CONFIG, ...newConfig, workerUrl: state.config.workerUrl || APP_CONFIG.workerUrl };
     saveConfig();
     strava.setConfig({ clientId: state.config.stravaClientId, clientSecret: state.config.stravaClientSecret, workerUrl: state.config.workerUrl });
     coach.setApiKey(state.config.groqApiKey);
@@ -325,14 +325,10 @@ function bindEvents() {
 
   // Strava — un solo clic, sin client_secret
   document.getElementById('stravaConnectBtn')?.addEventListener('click', () => {
-    const workerUrl     = document.getElementById('workerUrl')?.value?.trim()           || state.config.workerUrl;
-    const clientId      = document.getElementById('stravaClientId')?.value?.trim()      || state.config.stravaClientId;
-    const clientSecret  = document.getElementById('stravaClientSecret')?.value?.trim()  || state.config.stravaClientSecret;
+    const workerUrl     = state.config.workerUrl || APP_CONFIG.workerUrl;
+    const clientId      = document.getElementById('stravaClientId')?.value?.trim()     || state.config.stravaClientId;
+    const clientSecret  = document.getElementById('stravaClientSecret')?.value?.trim() || state.config.stravaClientSecret;
 
-    if (!workerUrl) {
-      ui.toast('Configura el Worker URL en ajustes avanzados');
-      return;
-    }
     if (!clientId) {
       ui.toast('Configura el Strava Client ID en ajustes avanzados');
       return;
