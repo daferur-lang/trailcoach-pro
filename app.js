@@ -10,8 +10,8 @@ const CONFIG_KEY = 'tc_config';
 const DEFAULT_CONFIG = {
   stravaClientId:     '',
   stravaClientSecret: '',
-  claudeApiKey:       '',
-  athleteName:        'Diego Codarini',
+  groqApiKey:       '',
+  athleteName:        '',
   goalName:           '',
   goalDistance:       65,
   goalElevation:      2000,
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Set up modules with config
   strava.setConfig(state.config);
-  coach.setApiKey(state.config.claudeApiKey);
+  coach.setApiKey(state.config.groqApiKey);
 
   // Load cached activities
   const cached = strava.getCachedActivities();
@@ -189,7 +189,7 @@ function bindEvents() {
     state.config = { ...DEFAULT_CONFIG, ...newConfig };
     saveConfig();
     strava.setConfig(state.config);
-    coach.setApiKey(state.config.claudeApiKey);
+    coach.setApiKey(state.config.groqApiKey);
     ui.applyTheme(state.config.darkMode);
     ui.closeSettings();
     ui.toast('Configuración guardada');
@@ -326,7 +326,7 @@ async function sendChatMessage() {
   if (!msg) return;
 
   if (!coach.hasApiKey()) {
-    ui.toast('Configura tu API Key de Anthropic en Ajustes');
+    ui.toast('Configura tu API Key de Groq en Ajustes');
     ui.openSettings();
     return;
   }
