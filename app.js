@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Register service worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.addEventListener('message', e => {
+      if (e.data?.type === 'RELOAD') window.location.reload();
+    });
   }
 
   // Set up modules with config

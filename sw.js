@@ -22,9 +22,18 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys().then(keys => {
+      const old = keys.filter(k => k !== CACHE_NAME);
+      return Promise.all(old.map(k => caches.delete(k)))
+        .then(() => self.clients.claim())
+        .then(() => {
+          if (old.length > 0) {
+            return self.clients.matchAll({ type: 'window' }).then(clients =>
+              clients.forEach(c => c.postMessage({ type: 'RELOAD' }))
+            );
+          }
+        });
+    })
   );
 });
 
@@ -32,7 +41,7 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
   // Never intercept Strava/Anthropic API calls
-  if (url.hostname.includes('strava.com') || url.hostname.includes('anthropic.com')) {
+  if (url.hostname.includes('strava.com') || url.hostname.includes('groq.com')) {
     return;
   }
 
