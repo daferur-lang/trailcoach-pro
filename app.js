@@ -4,6 +4,7 @@ import { PlanGenerator } from './js/plan.js';
 import { ProfileManager } from './js/profile.js';
 import { CoachAI }       from './js/coach.js';
 import { UI }            from './js/ui.js';
+import { GrantsManager, renderGrantsView } from './js/subvenciones.js';
 
 const CONFIG_KEY = 'tc_config';
 
@@ -32,6 +33,7 @@ const plan     = new PlanGenerator();
 const profile  = new ProfileManager();
 const coach    = new CoachAI();
 const ui       = new UI();
+const grants   = new GrantsManager();
 
 // ── Boot ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -129,6 +131,9 @@ function renderAll() {
   const details = profile.getStatDetails(state.activities);
   const athlete = strava.getAthlete();
   ui.renderProfile(stats, state.config, athlete, details);
+
+  // Grants
+  renderGrantsView(grants);
 
   // Settings state
   ui.loadSettingsValues(state.config);
@@ -342,6 +347,68 @@ function bindEvents() {
   // Profile menu (placeholder)
   document.getElementById('profileMenuBtn')?.addEventListener('click', () => {
     ui.toast('Actualiza tus datos en Ajustes');
+  });
+
+  // ── Grants ────────────────────────────────────────────────
+  const grantModal      = document.getElementById('grantModal');
+  const grantModalTitle = document.getElementById('grantModalTitle');
+
+  function openGrantModal(grant = null) {
+    document.getElementById('grantEditId').value       = grant?.id || '';
+    document.getElementById('grantConvocatoria').value = grant?.convocatoria || '';
+    document.getElementById('grantTipo').value         = grant?.tipo || '';
+    document.getElementById('grantProyecto').value     = grant?.proyecto || '';
+    document.getElementById('grantImporte').value      = grant?.importe ?? '';
+    document.getElementById('grantComision').value     = grant?.comisionPct ?? '';
+    document.getElementById('grantDeadline').value     = grant?.deadline || '';
+    document.getElementById('grantEstado').value       = grant?.estado || 'redaccion';
+    grantModalTitle.textContent = grant ? 'Editar Solicitud' : 'Nueva Solicitud';
+    grantModal?.classList.add('open');
+  }
+
+  function closeGrantModal() { grantModal?.classList.remove('open'); }
+
+  document.getElementById('addGrantBtn')?.addEventListener('click', () => openGrantModal());
+  document.getElementById('closeGrantModalBtn')?.addEventListener('click', closeGrantModal);
+  grantModal?.addEventListener('click', e => { if (e.target === e.currentTarget) closeGrantModal(); });
+
+  document.getElementById('saveGrantBtn')?.addEventListener('click', () => {
+    const id = document.getElementById('grantEditId').value;
+    const data = {
+      convocatoria: document.getElementById('grantConvocatoria').value.trim(),
+      tipo:         document.getElementById('grantTipo').value.trim(),
+      proyecto:     document.getElementById('grantProyecto').value.trim(),
+      importe:      parseFloat(document.getElementById('grantImporte').value) || 0,
+      comisionPct:  parseFloat(document.getElementById('grantComision').value) || 0,
+      deadline:     document.getElementById('grantDeadline').value,
+      estado:       document.getElementById('grantEstado').value
+    };
+    if (!data.convocatoria || !data.proyecto) {
+      ui.toast('Rellena organismo y proyecto');
+      return;
+    }
+    if (id) { grants.update(id, data); } else { grants.add(data); }
+    closeGrantModal();
+    renderGrantsView(grants);
+    ui.toast(id ? 'Solicitud actualizada' : 'Solicitud añadida');
+  });
+
+  document.getElementById('grantsList')?.addEventListener('click', e => {
+    const editBtn = e.target.closest('.grant-edit-btn');
+    const delBtn  = e.target.closest('.grant-del-btn');
+    if (editBtn) {
+      const id = editBtn.dataset.id;
+      const g  = grants.getAll().find(x => x.id === id);
+      if (g) openGrantModal(g);
+    }
+    if (delBtn) {
+      const id = delBtn.dataset.id;
+      if (confirm('¿Eliminar esta solicitud?')) {
+        grants.remove(id);
+        renderGrantsView(grants);
+        ui.toast('Solicitud eliminada');
+      }
+    }
   });
 }
 

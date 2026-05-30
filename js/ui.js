@@ -36,7 +36,7 @@ export class UI {
   }
 
   _cap(s) {
-    const map = { plan: 'Plan', actividades: 'Actividades', tu: 'Tu', coach: 'Coach' };
+    const map = { plan: 'Plan', actividades: 'Actividades', tu: 'Tu', coach: 'Coach', subvenciones: 'Subvenciones' };
     return map[s] || s.charAt(0).toUpperCase() + s.slice(1);
   }
 

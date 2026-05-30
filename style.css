@@ -1378,6 +1378,190 @@ img, svg { display: block; }
   margin-top: 2px;
 }
 
+/* --- GRANTS VIEW ------------------------------------------ */
+:root {
+  --c-success: #16a34a;
+  --c-warning: #ca8a04;
+  --c-danger:  #dc2626;
+}
+[data-theme="dark"] {
+  --c-success: #4ade80;
+  --c-warning: #fbbf24;
+  --c-danger:  #f87171;
+}
+
+.grants-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.grants-subtitle {
+  font-size: 13px;
+  color: var(--text-3);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: var(--radius-s);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.grants-kpi-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.grant-kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: 14px 14px 12px;
+  box-shadow: var(--shadow-s);
+}
+
+.grant-kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  margin-bottom: 6px;
+}
+
+.grant-kpi-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+}
+
+.grant-kpi-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+/* Grant Cards */
+.grant-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  padding: 14px 14px 12px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-s);
+}
+
+.grant-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.grant-card-org {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.grant-org-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1.3;
+}
+
+.grant-tipo {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+
+.grant-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.gs-success { background: #dcfce7; color: var(--c-success); }
+.gs-warning { background: #fef9c3; color: var(--c-warning); }
+.gs-danger  { background: #fee2e2; color: var(--c-danger); }
+.gs-neutral { background: var(--bg-input); color: var(--text-2); }
+
+[data-theme="dark"] .gs-success { background: rgba(74,222,128,.15); }
+[data-theme="dark"] .gs-warning { background: rgba(251,191,36,.15); }
+[data-theme="dark"] .gs-danger  { background: rgba(248,113,113,.15); }
+
+.grant-card-proyecto {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.grant-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.grant-importe {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-primary);
+  flex-shrink: 0;
+}
+
+.grant-foot-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 500;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.grant-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.grant-edit-btn,
+.grant-del-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-s);
+  color: var(--text-3);
+  transition: background .15s, color .15s;
+}
+.grant-edit-btn:active { background: var(--bg-input); color: var(--c-primary); }
+.grant-del-btn:active  { background: #fee2e2; color: var(--c-danger); }
+
 /* --- SYNC BTN STATE --------------------------------------- */
 #syncBtn.syncing { animation: spin .7s linear infinite; }
 
